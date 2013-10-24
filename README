@@ -24,10 +24,10 @@ SerialDriver
          |--CommPortException.java             // All RXTX related exceptions
          |--UnsupportedHardwareException.java  // On unknown FW version received from FW
       |--Battery.java                  // Power supply descriptor
-      |--Command.java                  // Command base class (between Library and your app)
+      |--Command.java                  // Command base class (between Lib and your app)
       |--EachWheelCommand.java         // Base message class for Arduino
       |--SerialCommunicator.java       // Sends command to COM port & waits for an answer
-      |--SerialDriver.java             // Driver abstraction class (for drivers unification)
+      |--SerialDriver.java             // Driver abstraction class (for unification)
       |--SerialHardwareDetector.java   // Use it to initialize SerialDriver
       |--SerialService.java            // Hangs on Queue waiting for your commands
       |--TractorCommand.java           // Tractor style Command.java implementation
