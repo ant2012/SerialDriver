@@ -5,6 +5,7 @@ It has a service, waiting for your commands on Queue object.
 
 How to use:
 Just add it to your project as Module and drive.
+For detail instructions see https://github.com/ant2012/SerialDriver/wiki/Quick-Start-Guide
 
 Examples:
 Library includes some classes, implementing protocol for managing 2-wheel robot.
