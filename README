@@ -1,2 +1,22 @@
-This file was created by IntelliJ IDEA 12.1.4 for binding GitHub repository
-This file was modified by IntelliJ IDEA 12.1.4 for binding GitHub repository
+SerialDriver is library for connecting and managing arduino based hardware through serial port.
+
+How it works:
+It has a service, waiting for your commands on Queue object.
+
+How to use:
+Just add it to your project as Module and drive.
+
+Examples:
+Library includes some classes, implementing protocol for managing 2-weel robot.
+See under arduino2wd dir.
+
+Library structure:
+SerialDriver
+|---.idea                   //-- IntelliJIDEA project files
+|---src
+    |---net.ant.rc.serial   //-- Main package
+        |---
+    |---log4j.properties    //-- Config file for standalone debugging
+    |---Main.java           //-- Main class for standalone debugging
+|---README                  //-- You are right here! Alloha! ))
+|---SerialDriver.iml        //-- IntelliJIDEA project
