@@ -13,26 +13,26 @@ And see our WebRC project using this library to drive robot from html5 control.
 
 Library structure:
 SerialDriver
-|---.idea                   //-- IntelliJIDEA project files
-|---src
-    |---net.ant.rc.serial   //-- Main package
-        |---arduino2wd                            //-- Example for 2-wheel robot
-            |---Arduino2WDEachWheelCommand.java   //-- EachWheelCommand.java implementation
-            |---Arduino2WDSerialDriver.java       //-- SerialDriver.java implementation
-            |---Chassis2WD.ino                    //-- Arduino firmware for 2WD
-        |---exception                               //-- SerialDriver Exceptions
-            |---CommPortException.java              //-- All RXTX related exceptions
-            |---UnsupportedHardwareException.java   //-- If hardware detector received unknown FW version from arduino
-        |---Battery.java                  //-- Battery descriptor
-        |---Command.java                  //-- Command base class (used between SerialDriver and Parent projects)
-        |---EachWheelCommand.java         //-- Base class for sending info to Arduino on each wheel
-        |---SerialCommunicator.java       //-- Sends commands to Robot & Hangs on COM port waiting for answers
-        |---SerialDriver.java             //-- Driver abstraction class (for drivers unification)
-        |---SerialHardwareDetector.java   //-- Use it to initialize SerialDriver
-        |---SerialService.java            //-- Hangs on Queue waiting for your commands
-        |---TractorCommand.java           //-- Tractor style Command.java implementation
-        |---VectorCommand.java            //-- Vector  style Command.java implementation
-    |---log4j.properties    //-- Config file for standalone debugging
-    |---Main.java           //-- Main class for standalone debugging
-|---README                  //-- You are right here! Alloha! ))
-|---SerialDriver.iml        //-- IntelliJIDEA project
+|--.idea             // IntelliJIDEA project files
+|--src
+   |--net.ant.rc.serial  // Main package
+      |--arduino2wd                          // Example for 2-wheel robot
+         |--Arduino2WDEachWheelCommand.java  // EachWheelCommand.java implementation
+         |--Arduino2WDSerialDriver.java      // SerialDriver.java implementation
+         |--Chassis2WD.ino                   // Arduino firmware for 2WD
+      |--exception                             // SerialDriver Exceptions
+         |--CommPortException.java             // All RXTX related exceptions
+         |--UnsupportedHardwareException.java  // On unknown FW version received from FW
+      |--Battery.java                  // Power supply descriptor
+      |--Command.java                  // Command base class (between Library and your app)
+      |--EachWheelCommand.java         // Base message class for Arduino
+      |--SerialCommunicator.java       // Sends command to COM port & waits for an answer
+      |--SerialDriver.java             // Driver abstraction class (for drivers unification)
+      |--SerialHardwareDetector.java   // Use it to initialize SerialDriver
+      |--SerialService.java            // Hangs on Queue waiting for your commands
+      |--TractorCommand.java           // Tractor style Command.java implementation
+      |--VectorCommand.java            // Vector  style Command.java implementation
+   |--log4j.properties  // Config file for standalone debugging
+   |--Main.java         // Main class for standalone debugging
+|--README            // You are right here! Alloha! ))
+|--SerialDriver.iml  // IntelliJIDEA project
