@@ -9,5 +9,5 @@ package net.ant.rc.serial;
  * @version 1.0
  * @see net.ant.rc.serial.arduino2wd Learn example in arduino2wd package
  */
-public class EachWheelCommand {
+public abstract class EachWheelCommand {
 }
