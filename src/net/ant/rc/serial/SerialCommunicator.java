@@ -12,12 +12,9 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.TooManyListenersException;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ant
- * Date: 29.01.13
- * Time: 2:21
- * To change this template use File | Settings | File Templates.
+/**Power supply descriptor
+ * @author Ant
+ * @version 1.0
  */
 public class SerialCommunicator implements SerialPortEventListener{
     private static final int NEW_LINE_ASCII = 10;

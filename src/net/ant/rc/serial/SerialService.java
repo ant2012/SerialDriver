@@ -60,15 +60,13 @@ public class SerialService implements Runnable {
                 if (CheckBypass2(command, valueForLog))continue;
                 if (CheckBypass3(command, valueForLog))continue;
 
-                if (command.commandType.equals("Digital")){
-                    if (command instanceof VectorCommand) {
-                        logger.info(serialDriver.sendVectorCommand(vectorCommand.x, vectorCommand.y));
-                    }
-                    if (command instanceof TractorCommand) {
-                        logger.info(serialDriver.sendTractorCommand(tractorCommand.left, tractorCommand.right));
-                    }
-                    lastCommand = command;
+                if (command instanceof VectorCommand) {
+                    logger.info(serialDriver.sendVectorCommand(vectorCommand.x, vectorCommand.y));
                 }
+                if (command instanceof TractorCommand) {
+                    logger.info(serialDriver.sendTractorCommand(tractorCommand.left, tractorCommand.right));
+                }
+                lastCommand = command;
             } catch (CommPortException | InterruptedException e) {
                 logger.error(e.getMessage(), e);
             }

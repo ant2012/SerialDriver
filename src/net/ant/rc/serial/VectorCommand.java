@@ -1,26 +1,47 @@
 package net.ant.rc.serial;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ant
- * Date: 05.02.13
- * Time: 0:09
- * To change this template use File | Settings | File Templates.
+/**Vector style Command extension.
+ * Used between SerialDriver and your application.
+ * Modify it for your app and put into Queue of SerialService instance.
+ * <img src="https://raw.github.com/ant2012/SerialDriver/master/SerialDriverArchitecture.png" />
+ * @author Ant
+ * @version 1.0
  */
 public class VectorCommand extends Command {
     final public int x;
     final public int y;
 
-    public VectorCommand(String commandType, int x, int y, long timeMillis) {
-        super(commandType, timeMillis);
+    /**Parameters x,y - is shift vector of single joystick. To use 2 joysticks see class
+     * {@link net.ant.rc.serial.TractorCommand#TractorCommand TractorCommand}
+     * @param timeMillis Timestamp of command.
+     *                   Used in SerialService to check obsolete commands
+     *                   and to prevent bad order.
+     *                   Bad order is possible in case of asynchronous put into Queue.
+     *                   For example in case of ajax RC.
+     * @param x X joystick shift
+     * @param y Y joystick shift
+     * @see net.ant.rc.serial.TractorCommand#TractorCommand TractorCommand
+     */
+    public VectorCommand(int x, int y, long timeMillis) {
+        super(timeMillis);
         this.x = x;
         this.y = y;
     }
 
+    /**Constructs the STOP command instance (x=y=0)
+     * @param timeMillis Timestamp of command.
+     *                   Used in SerialService to check obsolete commands
+     *                   and to prevent bad order.
+     *                   Bad order is possible in case of asynchronous put into Queue.
+     *                   For example in case of ajax RC.
+     */
     public static VectorCommand STOP(long timeMillis) {
-        return new VectorCommand("Digital", 0, 0, timeMillis);
+        return new VectorCommand(0, 0, timeMillis);
     }
 
+    /**{@inheritDoc}
+     *Compares x values & y values
+     */
     @Override
     public boolean equals(Object o){
         if (!(o instanceof VectorCommand))return false;

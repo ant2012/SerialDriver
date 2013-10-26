@@ -1,21 +1,27 @@
 package net.ant.rc.serial;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ant
- * Date: 17.02.13
- * Time: 5:43
- * To change this template use File | Settings | File Templates.
+/**Command base class.
+ * Used between SerialDriver and your application.
+ * Extend it for your app and put into Queue of SerialService instance.
+ * <img src="https://raw.github.com/ant2012/SerialDriver/master/SerialDriverArchitecture.png" />
+ * @author Ant
+ * @version 1.0
  */
 public abstract class Command implements Comparable {
-    final public String commandType;
     final public long timeMillis;
 
-    public Command(String commandType, long timeMillis) {
-        this.commandType = commandType;
+    /**
+     * @param timeMillis Timestamp of command.
+     *                   Used in SerialService to check obsolete commands
+     *                   and to prevent bad order.
+     *                   Bad order is possible in case of asynchronous put into Queue.
+     *                   For example in case of ajax RC.
+     */
+    public Command(long timeMillis) {
         this.timeMillis = timeMillis;
     }
 
+    /**{@inheritDoc}*/
     @Override
     public int compareTo(Object o) {
         //this > object => 1
@@ -29,6 +35,7 @@ public abstract class Command implements Comparable {
         return result;
     }
 
+    /**{@inheritDoc}*/
     @Override
     public abstract boolean equals(Object o);
 }

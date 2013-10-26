@@ -5,12 +5,13 @@ import net.ant.rc.serial.SerialDriver;
 import net.ant.rc.serial.SerialHardwareDetector;
 import net.ant.rc.serial.exception.CommPortException;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ant
- * Date: 07.02.13
- * Time: 11:03
- * To change this template use File | Settings | File Templates.
+/**SerialDriver extension for Arduino-based 2WD wheel robot.
+ * Used for translate commands from your application to your hardware (firmware logic).
+ * Modify it for your Robot Firmware.
+ * <img src="https://raw.github.com/ant2012/SerialDriver/master/SerialDriverArchitecture.png" />
+ * @author Ant
+ * @version 1.0
+ * @see net.ant.rc.serial.arduino2wd.Arduino2WDEachWheelCommand Don't forget to modify Arduino2WDEachWheelCommand for your hardware too.
  */
 public class Arduino2WDSerialDriver extends SerialDriver {
 
