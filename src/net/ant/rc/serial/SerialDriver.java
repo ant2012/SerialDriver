@@ -4,37 +4,73 @@ import net.ant.rc.serial.exception.CommPortException;
 
 import java.util.Date;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ant
- * Date: 07.02.13
- * Time: 12:23
- * To change this template use File | Settings | File Templates.
+/**Base Driver-abstraction class.
+ * Unification of hardware types for your application layer.
+ * SerialDriver translates app commands to hardware languages.
+ * Extend it according to your application.
+ * Use {@link SerialHardwareDetector HardwareDetector} to choose the appropriate hardware extension at runtime.
+ * <img alt="SerialDriver functional diagram" src="https://raw.github.com/ant2012/SerialDriver/master/SerialDriverArchitecture.png" />
+ * @author Ant
+ * @version 1.0
  */
 public abstract class SerialDriver {
-    public final SerialCommunicator serialCommunicator;
-    private final SerialHardwareDetector serialHardwareDetector;
+    protected final SerialCommunicator serialCommunicator;
+    private final SerialConnection serialConnection;
+    private long sensorLastTime = 0;
+    private final Battery battery;
+    private int lastTemperature = 0;
+    private final long SENSOR_REQUEST_TIMEOUT = 60 * 1000;
 
+
+    /**Sends Vector-style command to hardware.
+     * Parameters x,y - is shift vector of single joystick. To use 2 joysticks see
+     * {@link #sendTractorCommand sendTractorCommand} method
+     * @param x X joystick shift
+     * @param y Y joystick shift
+     * @see VectorCommand
+     * @return Firmware answer text
+     */
     public abstract String sendVectorCommand(int x, int y) throws CommPortException;
+
+    /**Sends Tractor-style command to hardware.
+     * @param left Left joystick speed (Positive values means straight direction. Negatives - forward.)
+     * @param right Right joystick speed
+     * @see TractorCommand
+     * @return Firmware answer text
+     */
     public abstract String sendTractorCommand(int left, int right) throws CommPortException;
 
+    /**Method for constructing programmatic (not analog like WebRC) moves.
+     * This method isn't currently used in any example.
+     * But it gives direct access to hardware motors for your application without translation by SerialDriver.
+     * @param eachWheelCommand Defines speeds for each motor of your device
+     * @return Firmware answer text
+     */
     public abstract String sendEachWheelCommand(EachWheelCommand eachWheelCommand) throws CommPortException;
 
-    private long sensorLastTime = 0;
-    private Battery battery;
-    private int lastTemperature = 0;
-    private long SENSOR_REQUEST_TIMEOUT = 60 * 1000;
-
-    public SerialDriver(SerialHardwareDetector serialHardwareDetector) {
-        this.serialHardwareDetector = serialHardwareDetector;
-        this.serialCommunicator = serialHardwareDetector.getSerialCommunicator();
+    /**Not useful from the application.
+     * Initialise {@link SerialHardwareDetector HardwareDetector}
+     * and use {@link SerialHardwareDetector#getSerialDriver() detector.getSerialDriver()} method to access a SerialDriver instance
+     */
+    protected SerialDriver(SerialConnection serialConnection) {
+        this.serialConnection = serialConnection;
+        this.serialCommunicator = serialConnection.getSerialCommunicator();
         this.battery = new Battery();
     }
 
+    /**Disconnects hardware.
+     * @see net.ant.rc.serial.SerialConnection#disconnect()
+     */
     public void disconnect(){
-        this.serialHardwareDetector.disconnect();
+        this.serialConnection.disconnect();
     }
 
+    /**Gets voltage level and temperature from hardware chip sensors.
+     * Use it to periodically refresh indicators.
+     * And use indicator getters to access values at any time.
+     * @see #getChipVoltage()
+     * @see #getChipTemperature()
+     */
     public final void getChipParameters() throws CommPortException {
         long timestamp = (new Date()).getTime();
         if((timestamp - sensorLastTime) > SENSOR_REQUEST_TIMEOUT){
@@ -44,10 +80,17 @@ public abstract class SerialDriver {
         }
     }
 
+    /**@return Voltage indicator value in milli Volts.
+     * @see #getChipParameters()
+     * @see Battery
+     */
     public final int getChipVoltage() {
         return battery.getCurrentVoltage();
     }
 
+    /**@return Temperature indicator value in milli Celsius.
+     * @see #getChipParameters()
+     */
     public final int getChipTemperature() {
         return lastTemperature;
     }

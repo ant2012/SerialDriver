@@ -1,6 +1,7 @@
 package net.ant.rc.serial.arduino2wd;
 
 import net.ant.rc.serial.EachWheelCommand;
+import net.ant.rc.serial.SerialConnection;
 import net.ant.rc.serial.SerialDriver;
 import net.ant.rc.serial.SerialHardwareDetector;
 import net.ant.rc.serial.exception.CommPortException;
@@ -8,18 +9,22 @@ import net.ant.rc.serial.exception.CommPortException;
 /**SerialDriver extension for Arduino-based 2WD wheel robot.
  * Used for translate commands from your application to your hardware (firmware logic).
  * Modify it for your Robot Firmware.
- * <img src="https://raw.github.com/ant2012/SerialDriver/master/SerialDriverArchitecture.png" />
+ * <img alt="SerialDriver functional diagram" src="https://raw.github.com/ant2012/SerialDriver/master/SerialDriverArchitecture.png" />
  * @author Ant
  * @version 1.0
  * @see net.ant.rc.serial.arduino2wd.Arduino2WDEachWheelCommand Don't forget to modify Arduino2WDEachWheelCommand for your hardware too.
  */
 public class Arduino2WDSerialDriver extends SerialDriver {
 
-    int maxClientValue = 100;
-    int maxSpeed = 255;
+    private final int maxClientValue = 100;
+    private final int maxSpeed = 255;
 
-    public Arduino2WDSerialDriver(SerialHardwareDetector serialHardwareDetector) {
-        super(serialHardwareDetector);
+    /**Not useful from the application.
+     * Initialise {@link SerialHardwareDetector HardwareDetector}
+     * and use {@link SerialHardwareDetector#getSerialDriver() detector.getSerialDriver()} method to access a SerialDriver instance
+     */
+    public Arduino2WDSerialDriver(SerialConnection serialConnection) {
+        super(serialConnection);
     }
 
     @Override
@@ -69,7 +74,7 @@ public class Arduino2WDSerialDriver extends SerialDriver {
         //Set direction sign
         c = c * sign;
 
-        //2WD transform from joystic Vector to wheel's speed
+        //2WD transform from joystick Vector to wheel's speed
         int  leftWheelSpeed = 0;
         int rightWheelSpeed = 0;
 

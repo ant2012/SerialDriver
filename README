@@ -28,6 +28,7 @@ SerialDriver
       |--Command.java                  // Command base class (between Lib and your app)
       |--EachWheelCommand.java         // Base message class for Arduino
       |--SerialCommunicator.java       // Sends command to COM port & waits for an answer
+      |--SerialConnection.java         // Holds all connection attributes
       |--SerialDriver.java             // Driver abstraction class (for unification)
       |--SerialHardwareDetector.java   // Use it to initialize SerialDriver
       |--SerialService.java            // Hangs on Queue waiting for your commands
@@ -35,5 +36,5 @@ SerialDriver
       |--VectorCommand.java            // Vector  style Command.java extension
    |--log4j.properties  // Config file for standalone debugging
    |--Main.java         // Main class for standalone debugging
-|--README            // You are right here! Alloha! ))
+|--README            // You are right here! Aloha! ))
 |--SerialDriver.iml  // IntelliJIDEA project

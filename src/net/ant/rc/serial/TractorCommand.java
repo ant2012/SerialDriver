@@ -3,7 +3,7 @@ package net.ant.rc.serial;
 /**Tractor style Command extension.
  * Used between SerialDriver and your application.
  * Modify it for your app and put into Queue of SerialService instance.
- * <img src="https://raw.github.com/ant2012/SerialDriver/master/SerialDriverArchitecture.png" />
+ * <img alt="SerialDriver functional diagram" src="https://raw.github.com/ant2012/SerialDriver/master/SerialDriverArchitecture.png" />
  * @author Ant
  * @version 1.0
  */

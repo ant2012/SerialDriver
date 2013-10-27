@@ -6,11 +6,16 @@ import org.apache.log4j.Logger;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ant
- * Date: 04.02.13
- * Time: 23:34
+/**Class running in separate Thread to listen for commands from application.
+ * It uses Queue object to collect commands.
+ * <p>
+ *   SerialService serialService = new SerialService(serialDriver, commandQueue);<br />
+ *   Thread serialServiceThread = new Thread(serialService);<br />
+ *   serialServiceThread.start();<br />
+ * </p>
+ * <img alt="SerialDriver functional diagram" src="https://raw.github.com/ant2012/SerialDriver/master/SerialDriverArchitecture.png" />
+ * @author Ant
+ * @version 1.0
  */
 public class SerialService implements Runnable {
 
@@ -24,6 +29,11 @@ public class SerialService implements Runnable {
     private boolean serviceStopped = false;
     private int queueSize;
 
+    /**
+     * Main life-loop of service.
+     * It takes your commands from the Queue, checks them and sends to SerialDriver.
+     * Not useful from application. It invokes by Thread.start() method.
+     */
     @Override
     public void run() {
 
@@ -74,7 +84,7 @@ public class SerialService implements Runnable {
         logger.info("Exit the lifecycle");
    }
 
-    //Bypass the entries older then last sended
+    //Bypass the entries older then last sent
     private boolean CheckBypass1(Command command, String valueForLog){
         boolean result = false;
         if (command.timeMillis < lastCommand.timeMillis){
@@ -104,12 +114,19 @@ public class SerialService implements Runnable {
         return result;
     }
 
+    /**
+     * @param serialDriver Use {@link net.ant.rc.serial.SerialHardwareDetector#getSerialDriver() HardwareDetector} to get it.
+     * @param commandQueue Just create new Queue and then put commands to it.
+     */
     public SerialService(SerialDriver serialDriver, PriorityBlockingQueue<Command> commandQueue) {
         this.serialDriver = serialDriver;
         this.commandQueue = commandQueue;
         this.logger = Logger.getLogger(this.getClass());
     }
 
+    /**
+     * Use it before destroy the Thread
+     */
     public void stop(){
         this.serviceStopped = true;
         this.serialDriver.disconnect();

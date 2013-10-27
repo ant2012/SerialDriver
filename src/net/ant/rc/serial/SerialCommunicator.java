@@ -12,7 +12,7 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.TooManyListenersException;
 
-/**Power supply descriptor
+/**This class is SerialPort listener.
  * @author Ant
  * @version 1.0
  */
@@ -23,17 +23,24 @@ public class SerialCommunicator implements SerialPortEventListener{
     private boolean isReadComplete = false;
     private byte[] receivedData = new byte[200];
     private int receivedCount = 0;
-    private final SerialHardwareDetector serialHardwareDetector;
+    private final SerialConnection serialConnection;
 
     private final Logger logger;
 
-    public SerialCommunicator(SerialHardwareDetector serialHardwareDetector) {
-        this.serialHardwareDetector = serialHardwareDetector;
+    /**Not useful from applications.
+     * It initiates by SerialDriver.
+     * You don't need to worry about it in application.
+     */
+    public SerialCommunicator(SerialConnection serialConnection) {
+        this.serialConnection = serialConnection;
         logger = Logger.getLogger(this.getClass());
     }
 
-    void initListener() throws TooManyListenersException {
-        SerialPort serialPort = serialHardwareDetector.getSerialPort();
+    /**Runs SerialPort event listener.
+     * If event appears, it notifies the {@link #serialEvent(gnu.io.SerialPortEvent) serialEvent} method.
+     */
+    public void initListener() throws TooManyListenersException {
+        SerialPort serialPort = serialConnection.getSerialPort();
         serialPort.removeEventListener();
         serialPort.addEventListener(this);
         serialPort.notifyOnDataAvailable(true);
@@ -45,7 +52,7 @@ public class SerialCommunicator implements SerialPortEventListener{
     }
 
     private void readLineFromInput(){
-        InputStream in = serialHardwareDetector.getIn();
+        InputStream in = serialConnection.getIn();
         if (isReadComplete) return;
         byte byteOfData;
         try {
@@ -62,6 +69,11 @@ public class SerialCommunicator implements SerialPortEventListener{
         }
     }
 
+    /**
+     * Invokes outside the application by SerialPort event.
+     * It require the listener is up.
+     * @see #initListener()
+     */
     public void serialEvent(SerialPortEvent serialPortEvent) {
         if (serialPortEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             readLineFromInput();
@@ -88,7 +100,7 @@ public class SerialCommunicator implements SerialPortEventListener{
     }
 
     private void sendMessage(String message){
-        OutputStream out = serialHardwareDetector.getOut();
+        OutputStream out = serialConnection.getOut();
         try {
             out.write((message + "\n").getBytes());
         } catch (IOException e) {
@@ -96,6 +108,11 @@ public class SerialCommunicator implements SerialPortEventListener{
         }
     }
 
+    /**
+     * Sends text through the SerialPort and waits for the answer
+     * @param command Text to send
+     * @return Firmware answer text
+     */
     public String sendCommand(String command) throws CommPortException {
         this.sendMessage(command);
 
