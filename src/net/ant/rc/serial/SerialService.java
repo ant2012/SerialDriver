@@ -1,6 +1,7 @@
 package net.ant.rc.serial;
 
 import net.ant.rc.serial.exception.CommPortException;
+import net.ant.rc.serial.exception.UnsupportedHardwareException;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.PriorityBlockingQueue;
@@ -21,12 +22,15 @@ public class SerialService implements Runnable {
 
     private final long MAX_QUEUE_SIZE = 20;
     private final long POLL_WAIT_TIMEOUT = 3000;
-    private final SerialDriver serialDriver;
-    private final PriorityBlockingQueue<Command> commandQueue;
+    private final int RECONNECT_TIMEOUT = 5000;
+    private SerialDriver serialDriver;
+    private PriorityBlockingQueue<Command> commandQueue;
+    private final String workPath;
     private final Logger logger;
     private Command STOP = TractorCommand.STOP(0);
     private Command lastCommand = STOP;
     private boolean serviceStopped = false;
+    private boolean errorDetected = false;
     private int queueSize;
 
     /**
@@ -38,6 +42,7 @@ public class SerialService implements Runnable {
     public void run() {
 
         while(!this.serviceStopped){
+            while(errorDetected) reConnect(workPath);
             try {
                 serialDriver.getChipParameters();
                 Command command = this.commandQueue.poll(POLL_WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -79,6 +84,7 @@ public class SerialService implements Runnable {
                 lastCommand = command;
             } catch (CommPortException | InterruptedException e) {
                 logger.error(e.getMessage(), e);
+                errorDetected = true;
             }
         }
         logger.info("Exit the lifecycle");
@@ -115,13 +121,34 @@ public class SerialService implements Runnable {
     }
 
     /**
-     * @param serialDriver Use {@link net.ant.rc.serial.SerialHardwareDetector#getSerialDriver() HardwareDetector} to get it.
-     * @param commandQueue Just create new Queue and then put commands to it.
+     * @param commandQueue Just create new Queue and then put commands to it
+     * @param workPath Path to save detected portName for future fast access
      */
-    public SerialService(SerialDriver serialDriver, PriorityBlockingQueue<Command> commandQueue) {
-        this.serialDriver = serialDriver;
+    public SerialService(PriorityBlockingQueue<Command> commandQueue, String workPath) {
         this.commandQueue = commandQueue;
+        this.workPath = workPath;
         this.logger = Logger.getLogger(this.getClass());
+        reConnect(workPath);
+    }
+
+    /**
+     * Tries to reconnect robot after lost connection
+     * @param workPath Path to save detected portName for future fast access
+     */
+    public void reConnect(String workPath) {
+        try {
+            SerialHardwareDetector serialHardwareDetector = new SerialHardwareDetector(workPath);
+            this.serialDriver = serialHardwareDetector.getSerialDriver();
+            errorDetected = false;
+        } catch (CommPortException | UnsupportedHardwareException e) {
+            logger.error(e.getMessage(), e);
+            errorDetected = true;
+            try {
+                Thread.sleep(RECONNECT_TIMEOUT);
+            } catch (InterruptedException e1) {
+                logger.error(e1.getMessage(), e1);
+            }
+        }
     }
 
     /**
@@ -130,5 +157,13 @@ public class SerialService implements Runnable {
     public void stop(){
         this.serviceStopped = true;
         this.serialDriver.disconnect();
+    }
+
+    /**
+     * Getter
+     * @return SerialDriver instance
+     */
+    public SerialDriver getSerialDriver() {
+        return serialDriver;
     }
 }
