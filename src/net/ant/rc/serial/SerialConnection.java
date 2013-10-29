@@ -48,7 +48,6 @@ public class SerialConnection {
     public void init(CommPortIdentifier commPortIdentifier, String portName) throws CommPortException {
         clearPortAttributes();
         this.portName = portName;
-        logger.info("Checking port:" + portName);
         checkPortProperties(commPortIdentifier);
         checkPort(commPortIdentifier);
     }
@@ -114,7 +113,7 @@ public class SerialConnection {
     private void openSerialPort(CommPortIdentifier commPortIdentifier) throws PortInUseException, UnsupportedCommOperationException, CommPortException {
         logger.info("Opening port..");
         CommPort commPort = commPortIdentifier.open(this.getClass().getName(), COMM_OPEN_TIMEOUT);
-        logger.info("Checking port properties..");
+        logger.info("Probing opened port as Serial..");
         if (!(commPort instanceof SerialPort)){
             commPort.close();
             throw new CommPortException("Wrong port type. Serial port expected.");

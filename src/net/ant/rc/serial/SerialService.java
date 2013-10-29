@@ -40,7 +40,7 @@ public class SerialService implements Runnable {
      */
     @Override
     public void run() {
-
+        logger.info("Starting SerialService..");
         while(!this.serviceStopped){
             while(errorDetected) reConnect(workPath);
             try {
@@ -137,6 +137,7 @@ public class SerialService implements Runnable {
      */
     public void reConnect(String workPath) {
         try {
+            logger.info("SerialService: Trying to reConnect robot..");
             SerialHardwareDetector serialHardwareDetector = new SerialHardwareDetector(workPath);
             this.serialDriver = serialHardwareDetector.getSerialDriver();
             errorDetected = false;
@@ -155,6 +156,7 @@ public class SerialService implements Runnable {
      * Use it before destroy the Thread
      */
     public void stop(){
+        logger.info("Stopping SerialService..");
         this.serviceStopped = true;
         this.serialDriver.disconnect();
     }
