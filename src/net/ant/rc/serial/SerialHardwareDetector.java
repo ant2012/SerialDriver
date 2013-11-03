@@ -6,7 +6,6 @@ import net.ant.rc.serial.exception.CommPortException;
 import net.ant.rc.serial.exception.UnsupportedHardwareException;
 import org.apache.log4j.Logger;
 
-import java.io.*;
 import java.util.*;
 
 /**Detects robot on any comm port.
@@ -22,10 +21,10 @@ public class SerialHardwareDetector {
     private final String configFileName = "serial.conf";
 
     private final SerialConnection serialConnection;
-    private final String workingPath;
     private final int chassisType;
     private final Logger logger;
     private SerialDriver serialDriver;
+    private Config config;
 
     /**
      * @return SerialDriver instance
@@ -38,10 +37,9 @@ public class SerialHardwareDetector {
      * @param workingPath Path to save detected portName for future fast access
      */
     public SerialHardwareDetector(String workingPath) throws CommPortException, UnsupportedHardwareException {
+        config = new Config(workingPath);
         this.serialConnection = new SerialConnection();
         logger = Logger.getLogger(this.getClass());
-        this.workingPath = workingPath;
-        testWorkingPath();
 
         checkSavedPortName();
 
@@ -57,52 +55,21 @@ public class SerialHardwareDetector {
 
     }
 
-    private void testWorkingPath() {
-        try {
-            String fileName = this.workingPath + "test.conf";
-            FileOutputStream o = new FileOutputStream(fileName);
-            Properties p = new Properties();
-            p.setProperty("test", "Test");
-            p.store(o, "Test workingPath");
-            o.close();
-
-            //Cleanup
-            File f = new File(fileName);
-            f.delete();
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
     private void checkSavedPortName(){
         try {
-            String portName = getSavedPortName();
+            String portName = config.getOption("CommPortName");
+            if (portName==null){
+                logger.warn("CommPortName not found in configuration file. Nothing to check.");
+                return;
+            }
             serialConnection.init(portName);
             //Check port by querying Firmware version
             checkFirmwareVersion();
-        } catch (NoSuchPortException | CommPortException e) {
-            logger.error(e.getMessage(), e);
+        } catch (NoSuchPortException e) {
+            logger.error(e.toString());
+        } catch (CommPortException e) {
+            logger.error(e.getMessage());
         }
-    }
-
-    private String getSavedPortName() throws CommPortException {
-        String portName = null;
-        logger.info("Searching for port name configuration..");
-        //logger.info("Load properties: " + this.workingPath + "/" + this.configFileName);
-        Properties config = new Properties();
-        //logger.info("First try loading from the current directory");
-        try {
-            InputStream in = new FileInputStream(this.workingPath + this.configFileName);
-            config.load(in);
-            in.close();
-            portName = config.getProperty("CommPortName");
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-        if (portName==null){
-            throw new CommPortException("CommPortName is not found in " + this.workingPath + this.configFileName);
-        }
-        return portName;
     }
 
     private void checkFirmwareVersion() throws CommPortException {
@@ -150,17 +117,7 @@ public class SerialHardwareDetector {
 
     private void saveDetectedPortConfiguration(String portName) {
         logger.info("Saving " + portName + " to configuration file for future runs");
-        Properties config = new Properties();
-        config.setProperty("CommPortName", portName);
-        FileOutputStream out;
-        try {
-            String fileName = workingPath + configFileName;
-            out = new FileOutputStream(fileName);
-            config.store(out, "Automatically detected port configuration");
-            out.close();
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
+        config.setOption("CommPortName", portName, "Automatically detected port configuration");
     }
 
     private int detectChassisType() throws CommPortException, UnsupportedHardwareException {

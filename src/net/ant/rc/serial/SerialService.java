@@ -142,7 +142,7 @@ public class SerialService implements Runnable {
             this.serialDriver = serialHardwareDetector.getSerialDriver();
             errorDetected = false;
         } catch (CommPortException | UnsupportedHardwareException e) {
-            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage());
             errorDetected = true;
             try {
                 Thread.sleep(RECONNECT_TIMEOUT);
