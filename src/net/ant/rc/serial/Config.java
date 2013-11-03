@@ -13,6 +13,17 @@ import java.util.Vector;
  * @version 1.0
  */
 public class Config {
+    public static final String COMM_PORT_NAME = "CommPortName";
+    public static final String BATTERY_MIN_VOLTAGE = "Battery.MinVoltage";
+    public static final String BATTERY_MAX_VOLTAGE = "Battery.MaxVoltage";
+    public static final String SERIAL_LISTENER_TIMEOUT = "SerialCommunicator.PortListenerTimeout";
+    public static final String COMM_PORT_INTERNAL_TIMEOUT = "SerialConnection.PortInternalTimeout";
+    public static final String SENSOR_REFRESH_PERIOD = "SerialDriver.HardwareSensorRefreshPeriod";
+    public static final String SERVICE_MAX_QUEUE_SIZE = "SerialService.MaxQueueSize";
+    public static final String SERVICE_POLL_WAIT_TIMEOUT = "SerialService.PollWaitTimeout";
+    public static final String SERVICE_RECONNECT_TIMEOUT = "SerialService.ReconnectTimeout";
+
+
     private Logger logger = Logger.getLogger(this.getClass());
 
     private Properties properties = new Properties();
@@ -25,7 +36,16 @@ public class Config {
 
     private Properties initDefault(){
         Properties p = new Properties();
-        p.setProperty("CommPortName", "COM3");
+        p.setProperty(COMM_PORT_NAME, "COM3");
+        p.setProperty(BATTERY_MIN_VOLTAGE, "3000");//3V
+        p.setProperty(BATTERY_MAX_VOLTAGE, "11100");//11.1V
+        p.setProperty(SERIAL_LISTENER_TIMEOUT, "5000");//5s wait to get answer or to init listener at 1st time
+        p.setProperty(COMM_PORT_INTERNAL_TIMEOUT, "2000");//2s initial timeout during port open method.
+        p.setProperty(SENSOR_REFRESH_PERIOD, String.valueOf(60 * 1000));//60s period refreshing hardware sensors
+        p.setProperty(SERVICE_MAX_QUEUE_SIZE, String.valueOf(20));
+        p.setProperty(SERVICE_POLL_WAIT_TIMEOUT, String.valueOf(3000));
+        p.setProperty(SERVICE_RECONNECT_TIMEOUT, String.valueOf(30000));
+
         //add properties here
         return p;
     }

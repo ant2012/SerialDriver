@@ -19,7 +19,8 @@ public abstract class SerialDriver {
     private long sensorLastTime = 0;
     private final Battery battery;
     private int lastTemperature = 0;
-    private final long SENSOR_REQUEST_TIMEOUT = 60 * 1000;
+    private final int SENSOR_REFRESH_PERIOD;
+    private final Config config;
 
 
     /**Sends Vector-style command to hardware.
@@ -52,10 +53,12 @@ public abstract class SerialDriver {
      * Initialise {@link SerialHardwareDetector HardwareDetector}
      * and use {@link SerialHardwareDetector#getSerialDriver() detector.getSerialDriver()} method to access a SerialDriver instance
      */
-    protected SerialDriver(SerialConnection serialConnection) {
+    protected SerialDriver(SerialConnection serialConnection, Config config) {
         this.serialConnection = serialConnection;
         this.serialCommunicator = serialConnection.getSerialCommunicator();
-        this.battery = new Battery();
+        this.battery = new Battery(config);
+        this.config = config;
+        SENSOR_REFRESH_PERIOD = Integer.parseInt(config.getOption(Config.SENSOR_REFRESH_PERIOD));
     }
 
     /**Disconnects hardware.
@@ -73,7 +76,7 @@ public abstract class SerialDriver {
      */
     public final void getChipParameters() throws CommPortException {
         long timestamp = (new Date()).getTime();
-        if((timestamp - sensorLastTime) > SENSOR_REQUEST_TIMEOUT){
+        if((timestamp - sensorLastTime) > SENSOR_REFRESH_PERIOD){
             sensorLastTime = timestamp;
             battery.setVoltage(Integer.parseInt(this.serialCommunicator.sendCommand("voltage")));
             lastTemperature = Integer.parseInt(this.serialCommunicator.sendCommand("temperature"));
@@ -95,4 +98,15 @@ public abstract class SerialDriver {
         return lastTemperature;
     }
 
+    public SerialConnection getSerialConnection() {
+        return serialConnection;
+    }
+
+    public Config getConfig() {
+        return config;
+    }
+
+    public Battery getBattery() {
+        return battery;
+    }
 }

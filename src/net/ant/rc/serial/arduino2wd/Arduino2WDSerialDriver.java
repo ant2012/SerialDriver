@@ -1,9 +1,6 @@
 package net.ant.rc.serial.arduino2wd;
 
-import net.ant.rc.serial.EachWheelCommand;
-import net.ant.rc.serial.SerialConnection;
-import net.ant.rc.serial.SerialDriver;
-import net.ant.rc.serial.SerialHardwareDetector;
+import net.ant.rc.serial.*;
 import net.ant.rc.serial.exception.CommPortException;
 
 /**SerialDriver extension for Arduino-based 2WD wheel robot.
@@ -23,8 +20,8 @@ public class Arduino2WDSerialDriver extends SerialDriver {
      * Initialise {@link SerialHardwareDetector HardwareDetector}
      * and use {@link SerialHardwareDetector#getSerialDriver() detector.getSerialDriver()} method to access a SerialDriver instance
      */
-    public Arduino2WDSerialDriver(SerialConnection serialConnection) {
-        super(serialConnection);
+    public Arduino2WDSerialDriver(SerialConnection serialConnection, Config config) {
+        super(serialConnection, config);
     }
 
     @Override

@@ -34,11 +34,11 @@ public class SerialHardwareDetector {
     }
 
     /**
-     * @param workingPath Path to save detected portName for future fast access
+     * @param config Just pass new Config()
      */
-    public SerialHardwareDetector(String workingPath) throws CommPortException, UnsupportedHardwareException {
-        config = new Config(workingPath);
-        this.serialConnection = new SerialConnection();
+    public SerialHardwareDetector(Config config) throws CommPortException, UnsupportedHardwareException {
+        this.config = config;
+        this.serialConnection = new SerialConnection(config);
         logger = Logger.getLogger(this.getClass());
 
         checkSavedPortName();
@@ -47,17 +47,17 @@ public class SerialHardwareDetector {
             detectCommPort();
         }
 
-        this.chassisType = detectChassisType();
+        chassisType = detectChassisType();
 
-        if (this.chassisType == this.CHASSIS_TYPE_ARDUINO_2WD)
-            this.serialDriver = new Arduino2WDSerialDriver(this.serialConnection);
         //Add new hardware here
+        if (chassisType == CHASSIS_TYPE_ARDUINO_2WD)
+            serialDriver = new Arduino2WDSerialDriver(serialConnection, config);
 
     }
 
     private void checkSavedPortName(){
         try {
-            String portName = config.getOption("CommPortName");
+            String portName = config.getOption(Config.COMM_PORT_NAME);
             if (portName==null){
                 logger.warn("CommPortName not found in configuration file. Nothing to check.");
                 return;
@@ -117,7 +117,7 @@ public class SerialHardwareDetector {
 
     private void saveDetectedPortConfiguration(String portName) {
         logger.info("Saving " + portName + " to configuration file for future runs");
-        config.setOption("CommPortName", portName, "Automatically detected port configuration");
+        config.setOption(Config.COMM_PORT_NAME, portName, "Automatically detected port configuration");
     }
 
     private int detectChassisType() throws CommPortException, UnsupportedHardwareException {

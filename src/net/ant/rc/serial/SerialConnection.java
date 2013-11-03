@@ -14,7 +14,7 @@ import java.util.TooManyListenersException;
  * @version 1.0
  */
 public class SerialConnection {
-    private final int COMM_OPEN_TIMEOUT = 2000;
+    private final int COMM_INTERNAL_TIMEOUT;
 
     private String portName;
     private SerialPort serialPort;
@@ -27,9 +27,10 @@ public class SerialConnection {
     /**
      * Creates SerialConnection and attached SerialCommunicator
      */
-    public SerialConnection() {
+    public SerialConnection(Config config) {
         logger = Logger.getLogger(this.getClass());
-        this.serialCommunicator = new SerialCommunicator(this);
+        this.serialCommunicator = new SerialCommunicator(this, config);
+        COMM_INTERNAL_TIMEOUT = Integer.parseInt(config.getOption(Config.COMM_PORT_INTERNAL_TIMEOUT));
     }
 
     /**
@@ -112,7 +113,7 @@ public class SerialConnection {
 
     private void openSerialPort(CommPortIdentifier commPortIdentifier) throws PortInUseException, UnsupportedCommOperationException, CommPortException {
         logger.info("Opening port..");
-        CommPort commPort = commPortIdentifier.open(this.getClass().getName(), COMM_OPEN_TIMEOUT);
+        CommPort commPort = commPortIdentifier.open(this.getClass().getName(), COMM_INTERNAL_TIMEOUT);
         logger.info("Probing opened port as Serial..");
         if (!(commPort instanceof SerialPort)){
             commPort.close();
@@ -121,7 +122,7 @@ public class SerialConnection {
         serialPort = (SerialPort) commPort;
         logger.info("Setting up the port..");
         serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-        serialPort.enableReceiveTimeout(COMM_OPEN_TIMEOUT);
+        serialPort.enableReceiveTimeout(COMM_INTERNAL_TIMEOUT);
     }
 
     private void checkPort(CommPortIdentifier commPortIdentifier) {

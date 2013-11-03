@@ -1,3 +1,4 @@
+import net.ant.rc.serial.Config;
 import net.ant.rc.serial.SerialDriver;
 import net.ant.rc.serial.SerialHardwareDetector;
 import net.ant.rc.serial.exception.CommPortException;
@@ -17,7 +18,7 @@ public class Main {
 
         SerialDriver serialDriver = null;
         try {
-            SerialHardwareDetector serialHardwareDetector = new SerialHardwareDetector(workingPath);
+            SerialHardwareDetector serialHardwareDetector = new SerialHardwareDetector(new Config(workingPath));
             serialDriver = serialHardwareDetector.getSerialDriver();
 
             logger.info(serialDriver.sendVectorCommand(0, 0));

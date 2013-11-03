@@ -17,8 +17,8 @@ import java.util.TooManyListenersException;
  * @version 1.0
  */
 public class SerialCommunicator implements SerialPortEventListener{
-    private static final int NEW_LINE_ASCII = 10;
-    private static final int LISTENER_INIT_TIMEOUT = 5000;
+    private final int NEW_LINE_ASCII = 10;
+    private final int LISTENER_TIMEOUT;
 
     private boolean isReadComplete = false;
     private byte[] receivedData = new byte[200];
@@ -31,9 +31,10 @@ public class SerialCommunicator implements SerialPortEventListener{
      * It initiates by SerialDriver.
      * You don't need to worry about it in application.
      */
-    public SerialCommunicator(SerialConnection serialConnection) {
+    public SerialCommunicator(SerialConnection serialConnection, Config config) {
         this.serialConnection = serialConnection;
         logger = Logger.getLogger(this.getClass());
+        LISTENER_TIMEOUT = Integer.parseInt(config.getOption(Config.SERIAL_LISTENER_TIMEOUT));
     }
 
     /**Runs SerialPort event listener.
@@ -45,7 +46,7 @@ public class SerialCommunicator implements SerialPortEventListener{
         serialPort.addEventListener(this);
         serialPort.notifyOnDataAvailable(true);
         try {
-            Thread.sleep(LISTENER_INIT_TIMEOUT);
+            Thread.sleep(LISTENER_TIMEOUT);
         } catch (InterruptedException e) {
             logger.error(e.getMessage(), e);
         }
@@ -120,7 +121,7 @@ public class SerialCommunicator implements SerialPortEventListener{
         long timestamp = new Date().getTime();
         while (message == null){
             message = this.checkMessage();
-            if ((new Date().getTime() - timestamp)> LISTENER_INIT_TIMEOUT){
+            if ((new Date().getTime() - timestamp)> LISTENER_TIMEOUT){
                 throw new CommPortException("Answer timeout expired");
             }
         }

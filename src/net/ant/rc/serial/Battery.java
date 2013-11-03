@@ -5,13 +5,15 @@ package net.ant.rc.serial;
  * @version 1.0
  */
 public class Battery {
-    private final int MIN_VOLTAGE_VALUE = 9000;//9V
-    private final int MAX_VOLTAGE_VALUE = 11100;//11.1V
+    private final int MIN_VOLTAGE_VALUE;
+    private final int MAX_VOLTAGE_VALUE;
     private int currentVoltage;
 
     /**Sets measured voltage=0
      */
-    public Battery() {
+    public Battery(Config config) {
+        this.MIN_VOLTAGE_VALUE = Integer.parseInt(config.getOption(Config.BATTERY_MIN_VOLTAGE));
+        this.MAX_VOLTAGE_VALUE = Integer.parseInt(config.getOption(Config.BATTERY_MAX_VOLTAGE));
         this.currentVoltage = 0;
     }
 

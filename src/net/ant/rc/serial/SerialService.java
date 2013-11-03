@@ -20,18 +20,18 @@ import java.util.concurrent.TimeUnit;
  */
 public class SerialService implements Runnable {
 
-    private final long MAX_QUEUE_SIZE = 20;
-    private final long POLL_WAIT_TIMEOUT = 3000;
-    private final int RECONNECT_TIMEOUT = 5000;
+    private final int MAX_QUEUE_SIZE;
+    private final int POLL_WAIT_TIMEOUT;
+    private final int RECONNECT_TIMEOUT;
     private SerialDriver serialDriver;
     private PriorityBlockingQueue<Command> commandQueue;
-    private final String workPath;
     private final Logger logger;
     private Command STOP = TractorCommand.STOP(0);
     private Command lastCommand = STOP;
     private boolean serviceStopped = false;
     private boolean errorDetected = false;
     private int queueSize;
+    private final Config config;
 
     /**
      * Main life-loop of service.
@@ -42,7 +42,7 @@ public class SerialService implements Runnable {
     public void run() {
         logger.info("Starting SerialService..");
         while(!this.serviceStopped){
-            while(errorDetected) reConnect(workPath);
+            while(errorDetected) reConnect();
             try {
                 serialDriver.getChipParameters();
                 Command command = this.commandQueue.poll(POLL_WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -126,19 +126,21 @@ public class SerialService implements Runnable {
      */
     public SerialService(PriorityBlockingQueue<Command> commandQueue, String workPath) {
         this.commandQueue = commandQueue;
-        this.workPath = workPath;
         this.logger = Logger.getLogger(this.getClass());
-        reConnect(workPath);
+        config = new Config(workPath);
+        MAX_QUEUE_SIZE = Integer.parseInt(config.getOption(Config.SERVICE_MAX_QUEUE_SIZE));
+        POLL_WAIT_TIMEOUT = Integer.parseInt(config.getOption(Config.SERVICE_POLL_WAIT_TIMEOUT));
+        RECONNECT_TIMEOUT = Integer.parseInt(config.getOption(Config.SERVICE_RECONNECT_TIMEOUT));
+        reConnect();
     }
 
     /**
      * Tries to reconnect robot after lost connection
-     * @param workPath Path to save detected portName for future fast access
      */
-    public void reConnect(String workPath) {
+    private void reConnect() {
         try {
             logger.info("SerialService: Trying to reConnect robot..");
-            SerialHardwareDetector serialHardwareDetector = new SerialHardwareDetector(workPath);
+            SerialHardwareDetector serialHardwareDetector = new SerialHardwareDetector(config);
             this.serialDriver = serialHardwareDetector.getSerialDriver();
             errorDetected = false;
         } catch (CommPortException | UnsupportedHardwareException e) {
@@ -157,8 +159,9 @@ public class SerialService implements Runnable {
      */
     public void stop(){
         logger.info("Stopping SerialService..");
+        if(this.serialDriver !=null)
+            this.serialDriver.disconnect();
         this.serviceStopped = true;
-        this.serialDriver.disconnect();
     }
 
     /**
