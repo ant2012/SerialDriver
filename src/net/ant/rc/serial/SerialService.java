@@ -44,7 +44,7 @@ public class SerialService implements Runnable {
         while(!this.serviceStopped){
             while(errorDetected) reConnect();
             try {
-                serialDriver.getChipParameters();
+                serialDriver.getArduinoState().refresh();
                 Command command = this.commandQueue.poll(POLL_WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
                 //If timeout was expired
                 if (command == null) {
