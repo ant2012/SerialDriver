@@ -1,4 +1,4 @@
-package net.ant.rc.serial.exception;
+package ru.ant.rc.serial.exception;
 
 /**On unknown hardware version received from device
  * @author Ant

@@ -1,7 +1,7 @@
-package net.ant.rc.serial.arduino2wd;
+package ru.ant.rc.serial.arduino2wd;
 
-import net.ant.rc.serial.*;
-import net.ant.rc.serial.exception.CommPortException;
+import ru.ant.rc.serial.exception.CommPortException;
+import ru.ant.rc.serial.*;
 
 /**SerialDriver extension for Arduino-based 2WD wheel robot.
  * Used for translate commands from your application to your hardware (firmware logic).
@@ -9,7 +9,7 @@ import net.ant.rc.serial.exception.CommPortException;
  * <img alt="SerialDriver functional diagram" src="https://raw.github.com/ant2012/SerialDriver/master/SerialDriverArchitecture.png" />
  * @author Ant
  * @version 1.0
- * @see net.ant.rc.serial.arduino2wd.Arduino2WDEachWheelCommand Don't forget to modify Arduino2WDEachWheelCommand for your hardware too.
+ * @see Arduino2WDEachWheelCommand Don't forget to modify Arduino2WDEachWheelCommand for your hardware too.
  */
 public class Arduino2WDSerialDriver extends SerialDriver {
 

@@ -1,4 +1,4 @@
-package net.ant.rc.serial;
+package ru.ant.rc.serial;
 
 /**Power supply descriptor
  * @author Ant

@@ -1,4 +1,4 @@
-package net.ant.rc.serial.exception;
+package ru.ant.rc.serial.exception;
 
 /**All RXTX related exceptions
  * @author Ant

@@ -1,4 +1,4 @@
-package net.ant.rc.serial;
+package ru.ant.rc.serial;
 
 /**Tractor style Command extension.
  * Used between SerialDriver and your application.

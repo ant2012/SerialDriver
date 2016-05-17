@@ -1,4 +1,4 @@
-package net.ant.rc.serial;
+package ru.ant.rc.serial;
 
 /**Vector style Command extension.
  * Used between SerialDriver and your application.
@@ -12,7 +12,7 @@ public class VectorCommand extends Command {
     final public int y;
 
     /**Parameters x,y - is shift vector of single joystick. To use 2 joysticks see class
-     * {@link net.ant.rc.serial.TractorCommand#TractorCommand TractorCommand}
+     * {@link TractorCommand#TractorCommand TractorCommand}
      * @param timeMillis Timestamp of command.
      *                   Used in SerialService to check obsolete commands
      *                   and to prevent bad order.
@@ -20,7 +20,7 @@ public class VectorCommand extends Command {
      *                   For example in case of ajax RC.
      * @param x X joystick shift
      * @param y Y joystick shift
-     * @see net.ant.rc.serial.TractorCommand#TractorCommand TractorCommand
+     * @see TractorCommand#TractorCommand TractorCommand
      */
     public VectorCommand(int x, int y, long timeMillis) {
         super(timeMillis);

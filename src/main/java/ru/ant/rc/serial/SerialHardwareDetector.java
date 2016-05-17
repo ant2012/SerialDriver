@@ -1,9 +1,9 @@
-package net.ant.rc.serial;
+package ru.ant.rc.serial;
 
 import gnu.io.*;
-import net.ant.rc.serial.arduino2wd.Arduino2WDSerialDriver;
-import net.ant.rc.serial.exception.CommPortException;
-import net.ant.rc.serial.exception.UnsupportedHardwareException;
+import ru.ant.rc.serial.arduino2wd.Arduino2WDSerialDriver;
+import ru.ant.rc.serial.exception.CommPortException;
+import ru.ant.rc.serial.exception.UnsupportedHardwareException;
 import org.apache.log4j.Logger;
 
 import java.util.*;

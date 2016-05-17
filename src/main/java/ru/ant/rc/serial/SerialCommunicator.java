@@ -1,9 +1,9 @@
-package net.ant.rc.serial;
+package ru.ant.rc.serial;
 
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
-import net.ant.rc.serial.exception.CommPortException;
+import ru.ant.rc.serial.exception.CommPortException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;

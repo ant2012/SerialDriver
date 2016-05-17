@@ -1,8 +1,6 @@
-package net.ant.rc.serial;
+package ru.ant.rc.serial;
 
-import net.ant.rc.serial.exception.CommPortException;
-
-import java.util.Date;
+import ru.ant.rc.serial.exception.CommPortException;
 
 /**Base Driver-abstraction class.
  * Unification of hardware types for your application layer.
@@ -57,7 +55,7 @@ public abstract class SerialDriver {
     }
 
     /**Disconnects hardware.
-     * @see net.ant.rc.serial.SerialConnection#disconnect()
+     * @see SerialConnection#disconnect()
      */
     public void disconnect(){
         this.serialConnection.disconnect();

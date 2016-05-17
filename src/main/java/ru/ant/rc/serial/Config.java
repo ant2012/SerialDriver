@@ -1,4 +1,4 @@
-package net.ant.rc.serial;
+package ru.ant.rc.serial;
 
 import org.apache.log4j.Logger;
 

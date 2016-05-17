@@ -1,7 +1,7 @@
-package net.ant.rc.serial;
+package ru.ant.rc.serial;
 
-import net.ant.rc.serial.exception.CommPortException;
-import net.ant.rc.serial.exception.UnsupportedHardwareException;
+import ru.ant.rc.serial.exception.CommPortException;
+import ru.ant.rc.serial.exception.UnsupportedHardwareException;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.PriorityBlockingQueue;

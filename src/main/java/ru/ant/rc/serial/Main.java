@@ -1,8 +1,7 @@
-import net.ant.rc.serial.Config;
-import net.ant.rc.serial.SerialDriver;
-import net.ant.rc.serial.SerialHardwareDetector;
-import net.ant.rc.serial.exception.CommPortException;
-import net.ant.rc.serial.exception.UnsupportedHardwareException;
+package ru.ant.rc.serial;
+
+import ru.ant.rc.serial.exception.CommPortException;
+import ru.ant.rc.serial.exception.UnsupportedHardwareException;
 import org.apache.log4j.Logger;
 
 import java.io.File;

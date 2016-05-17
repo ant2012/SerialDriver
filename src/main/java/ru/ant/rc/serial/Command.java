@@ -1,4 +1,4 @@
-package net.ant.rc.serial;
+package ru.ant.rc.serial;
 
 /**Command base class.
  * Used between SerialDriver and your application.

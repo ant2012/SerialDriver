@@ -1,6 +1,6 @@
-package net.ant.rc.serial;
+package ru.ant.rc.serial;
 
-import net.ant.rc.serial.exception.CommPortException;
+import ru.ant.rc.serial.exception.CommPortException;
 import org.apache.log4j.Logger;
 
 import java.text.ParseException;
