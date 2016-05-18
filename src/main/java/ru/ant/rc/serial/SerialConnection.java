@@ -1,8 +1,8 @@
 package ru.ant.rc.serial;
 
 import gnu.io.*;
-import ru.ant.rc.serial.exception.CommPortException;
 import org.apache.log4j.Logger;
+import ru.ant.rc.serial.exception.CommPortException;
 
 import java.io.IOException;
 import java.io.InputStream;

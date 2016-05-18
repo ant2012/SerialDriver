@@ -1,7 +1,7 @@
 package ru.ant.rc.serial;
 
-import ru.ant.rc.serial.exception.CommPortException;
 import org.apache.log4j.Logger;
+import ru.ant.rc.serial.exception.CommPortException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

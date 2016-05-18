@@ -1,7 +1,7 @@
 package ru.ant.rc.serial.arduino2wd;
 
-import ru.ant.rc.serial.exception.CommPortException;
 import ru.ant.rc.serial.*;
+import ru.ant.rc.serial.exception.CommPortException;
 
 /**SerialDriver extension for Arduino-based 2WD wheel robot.
  * Used for translate commands from your application to your hardware (firmware logic).

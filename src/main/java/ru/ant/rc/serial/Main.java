@@ -1,8 +1,8 @@
 package ru.ant.rc.serial;
 
+import org.apache.log4j.Logger;
 import ru.ant.rc.serial.exception.CommPortException;
 import ru.ant.rc.serial.exception.UnsupportedHardwareException;
-import org.apache.log4j.Logger;
 
 import java.io.File;
 

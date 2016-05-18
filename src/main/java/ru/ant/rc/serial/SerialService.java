@@ -1,8 +1,8 @@
 package ru.ant.rc.serial;
 
+import org.apache.log4j.Logger;
 import ru.ant.rc.serial.exception.CommPortException;
 import ru.ant.rc.serial.exception.UnsupportedHardwareException;
-import org.apache.log4j.Logger;
 
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +29,7 @@ public class SerialService implements Runnable {
     private Command STOP = TractorCommand.STOP(0);
     private Command lastCommand = STOP;
     private boolean serviceStopped = false;
+    private boolean serviceStopping = false;
     private boolean errorDetected = false;
     private int queueSize;
     private final Config config;
@@ -41,8 +42,9 @@ public class SerialService implements Runnable {
     @Override
     public void run() {
         logger.info("Starting SerialService..");
-        while(!this.serviceStopped){
-            while(errorDetected) reConnect();
+        while(!this.serviceStopping){
+            while(errorDetected && !this.serviceStopping) reConnect();
+            if(this.serviceStopping) break;
             try {
                 serialDriver.getArduinoState().refresh();
                 Command command = this.commandQueue.poll(POLL_WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -87,6 +89,7 @@ public class SerialService implements Runnable {
                 errorDetected = true;
             }
         }
+        serviceStopped = true;
         logger.info("Exit the lifecycle");
    }
 
@@ -159,9 +162,18 @@ public class SerialService implements Runnable {
      */
     public void stop(){
         logger.info("Stopping SerialService..");
+        this.serviceStopping = true;
+
+        while(!serviceStopped) {
+            try {
+                Thread.sleep(POLL_WAIT_TIMEOUT);
+                System.out.print(".");
+            } catch (InterruptedException e) {
+                logger.error("Sleep error", e);
+            }
+        }
         if(this.serialDriver !=null)
             this.serialDriver.disconnect();
-        this.serviceStopped = true;
     }
 
     /**

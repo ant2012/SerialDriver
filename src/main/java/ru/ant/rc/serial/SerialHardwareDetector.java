@@ -1,12 +1,14 @@
 package ru.ant.rc.serial;
 
-import gnu.io.*;
+import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
+import org.apache.log4j.Logger;
 import ru.ant.rc.serial.arduino2wd.Arduino2WDSerialDriver;
 import ru.ant.rc.serial.exception.CommPortException;
 import ru.ant.rc.serial.exception.UnsupportedHardwareException;
-import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**Detects robot on any comm port.
  * Check it's type and init appropriate SerialDriver.
