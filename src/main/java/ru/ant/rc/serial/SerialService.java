@@ -171,6 +171,7 @@ public class SerialService implements Runnable {
             } catch (InterruptedException e) {
                 logger.error("Sleep error", e);
             }
+            System.out.println();
         }
         if(this.serialDriver !=null)
             this.serialDriver.disconnect();
