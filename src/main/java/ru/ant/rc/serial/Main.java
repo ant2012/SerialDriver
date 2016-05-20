@@ -17,7 +17,7 @@ public class Main {
 
         SerialDriver serialDriver = null;
         try {
-            SerialHardwareDetector serialHardwareDetector = new SerialHardwareDetector(new Config(workingPath));
+            SerialHardwareDetector serialHardwareDetector = new SerialHardwareDetector(new Config());
             serialDriver = serialHardwareDetector.getSerialDriver();
 
             logger.info(serialDriver.sendVectorCommand(0, 0));
