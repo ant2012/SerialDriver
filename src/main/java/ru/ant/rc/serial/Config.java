@@ -1,8 +1,7 @@
 package ru.ant.rc.serial;
 
+import org.apache.log4j.Logger;
 import ru.ant.common.App;
-import ru.ant.common.Loggable;
-import ru.ant.common.properties.PropertiesManager;
 
 import java.io.IOException;
 
@@ -12,7 +11,8 @@ import java.io.IOException;
  * @author Ant
  * @version 1.0
  */
-public class Config extends Loggable{
+public class Config {
+    private Logger log = Logger.getLogger(getClass());
     public static final String FILE_NAME = "serial-driver.properties";
 
     public static final String COMM_PORT_NAME = "CommPortName";

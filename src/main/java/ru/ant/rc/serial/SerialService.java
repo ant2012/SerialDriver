@@ -1,6 +1,6 @@
 package ru.ant.rc.serial;
 
-import ru.ant.common.Loggable;
+import org.apache.log4j.Logger;
 import ru.ant.rc.serial.exception.CommPortException;
 import ru.ant.rc.serial.exception.UnsupportedHardwareException;
 
@@ -18,7 +18,8 @@ import java.util.concurrent.TimeUnit;
  * @author Ant
  * @version 1.0
  */
-public class SerialService extends Loggable implements Runnable {
+public class SerialService implements Runnable {
+    private Logger log = Logger.getLogger(getClass());
     private static SerialService ourInstance = new SerialService();
     public static SerialService getInstance() {
         return ourInstance;
