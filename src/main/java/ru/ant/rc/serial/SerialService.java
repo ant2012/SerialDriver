@@ -101,22 +101,35 @@ public class SerialService implements Runnable {
                 log.error(e.getMessage(), e);
                 errorDetected = true;
             } catch (Exception e){
-                serviceStopped = true;
+                setStopped();
                 log.info("Exit the lifecycle");
                 throw e;
             }
         }
         System.out.println();
+        setStopped();
         log.info("Exit the lifecycle");
-        serviceStopped = true;
    }
 
-    public void start(){
-        if(!serviceStopped) return;
-        serviceStopped = false;
-        new Thread(this).start();
+    private void setStopped() {
+        serviceStopped = true;
+        serviceStopping = false;
     }
 
+    private void setRunning() {
+        serviceStopped = false;
+        serviceStopping = false;
+    }
+
+    private void setStopping() {
+        serviceStopping = true;
+    }
+
+    public void start(){
+        if(!serviceStopped || serviceStopping) return;
+        setRunning();
+        new Thread(this).start();
+    }
 
 
     //Bypass the entries older then last sent
@@ -173,8 +186,9 @@ public class SerialService implements Runnable {
      * Use it before destroy the Thread
      */
     public void stop(){
+        if(serviceStopping || serviceStopped) return;
         log.info("Stopping SerialService..");
-        this.serviceStopping = true;
+        setStopping();
 
         while(!serviceStopped) {
             try {
@@ -184,8 +198,8 @@ public class SerialService implements Runnable {
                 log.error("Sleep error", e);
             }
         }
-        if(this.serialDriver !=null)
-            this.serialDriver.disconnect();
+        if(serialDriver !=null)
+            serialDriver.disconnect();
     }
 
     public void stopNowait(){
