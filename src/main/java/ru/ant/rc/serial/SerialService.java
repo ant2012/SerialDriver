@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import ru.ant.rc.serial.exception.CommPortException;
 import ru.ant.rc.serial.exception.UnsupportedHardwareException;
 
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**Class running in separate Thread to listen for commands from application.
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @author Ant
  * @version 1.0
  */
-public class SerialService implements Runnable {
+public class SerialService implements Listener {
     private Logger log = Logger.getLogger(getClass());
     private static SerialService ourInstance = new SerialService();
     public static SerialService getInstance() {
@@ -26,23 +26,29 @@ public class SerialService implements Runnable {
     }
 
     private SerialService() {
-        commandQueue = new PriorityBlockingQueue<>();
+        commandQueue = new CommandQueue();
+        commandQueue.addDataListener(this);
+
         config = new Config();
         MAX_QUEUE_SIZE = Integer.parseInt(config.getOption(Config.SERVICE_MAX_QUEUE_SIZE));
         POLL_WAIT_TIMEOUT = Integer.parseInt(config.getOption(Config.SERVICE_POLL_WAIT_TIMEOUT));
         RECONNECT_TIMEOUT = Integer.parseInt(config.getOption(Config.SERVICE_RECONNECT_TIMEOUT));
+        SLEEP_TIMEOUT = Integer.parseInt(config.getOption(Config.SLEEP_TIMEOUT));
     }
 
     private final int MAX_QUEUE_SIZE;
     private final int POLL_WAIT_TIMEOUT;
     private final int RECONNECT_TIMEOUT;
+    private final int SLEEP_TIMEOUT;
     private SerialDriver serialDriver;
-    private PriorityBlockingQueue<Command> commandQueue;
+    private final CommandQueue commandQueue;
+    private Listener queueListener;
     private Command STOP = TractorCommand.STOP(0);
     private Command lastCommand = STOP;
     private boolean serviceStopped = true;
     private boolean serviceStopping = false;
-    private boolean errorDetected = false;
+    private boolean disconnected = true;
+    private boolean serialListenerPaused = false;
     private int queueSize;
     private final Config config;
 
@@ -51,21 +57,27 @@ public class SerialService implements Runnable {
      * It takes your commands from the Queue, checks them and sends to SerialDriver.
      * Not useful from application. It invokes by Thread.start() method.
      */
-    @Override
     public void run() {
         log.info("Starting SerialService..");
-        reConnect();
+//        reConnect();
+        long lastCommandTime = new Date().getTime();
         while(!this.serviceStopping){
-            while(errorDetected && !this.serviceStopping) reConnect();
+            while(disconnected && !this.serviceStopping) reConnect();
             if(this.serviceStopping) break;
             try {
+                long now = new Date().getTime();
                 serialDriver.getArduinoState().refresh();
                 Command command = this.commandQueue.poll(POLL_WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
                 //If timeout was expired
                 if (command == null) {
                     //if last command was STOP then continue waiting, else go to send STOP
                     if (lastCommand.equals(STOP)) {
-                        //log.info("Lifecycle tick");
+                        log.debug("Lifecycle tick");
+                        if( now - lastCommandTime > SLEEP_TIMEOUT){
+                            log.info("Pause serial listener");
+                            pauseSerialListener();
+                            break;
+                        }
                         continue;
                     }
                     command = TractorCommand.STOP(lastCommand.timeMillis);
@@ -86,9 +98,11 @@ public class SerialService implements Runnable {
                     valueForLog = tractorCommand.left + "," + tractorCommand.right;
                 }
 
-                if (CheckBypass1(command, valueForLog))continue;
-                if (CheckBypass2(command, valueForLog))continue;
-                if (CheckBypass3(command, valueForLog))continue;
+                if (CheckBypass1(command, valueForLog) || CheckBypass2(command, valueForLog) || CheckBypass3(command, valueForLog)){
+                    lastCommand = command;
+                    lastCommandTime = now;
+                    continue;
+                }
 
                 if (command instanceof VectorCommand) {
                     log.info(serialDriver.sendVectorCommand(vectorCommand.x, vectorCommand.y));
@@ -96,17 +110,20 @@ public class SerialService implements Runnable {
                 if (command instanceof TractorCommand) {
                     log.info(serialDriver.sendTractorCommand(tractorCommand.left, tractorCommand.right));
                 }
+
                 lastCommand = command;
+                lastCommandTime = now;
+
             } catch (CommPortException | InterruptedException e) {
                 log.error(e.getMessage(), e);
-                errorDetected = true;
+                disconnected = true;
             } catch (Exception e){
                 setStopped();
                 log.info("Exit the lifecycle");
                 throw e;
             }
         }
-        System.out.println();
+        if(serviceStopping) System.out.println();
         setStopped();
         log.info("Exit the lifecycle");
    }
@@ -128,7 +145,20 @@ public class SerialService implements Runnable {
     public void start(){
         if(!serviceStopped || serviceStopping) return;
         setRunning();
-        new Thread(this).start();
+        resumeSerialListener();
+        run();
+//        new Thread(this).start();
+    }
+
+    private void pauseSerialListener() {
+        serialDriver.pause();
+        serialListenerPaused = true;
+    }
+
+    private void resumeSerialListener() {
+        if(!serialListenerPaused) return;
+        serialListenerPaused = false;
+        serialDriver.resume();
     }
 
 
@@ -170,10 +200,10 @@ public class SerialService implements Runnable {
             log.info("SerialService: Trying to reConnect robot..");
             SerialHardwareDetector serialHardwareDetector = new SerialHardwareDetector(config);
             this.serialDriver = serialHardwareDetector.getSerialDriver();
-            errorDetected = false;
+            disconnected = false;
         } catch (CommPortException | UnsupportedHardwareException e) {
             log.error(e.getMessage());
-            errorDetected = true;
+            disconnected = true;
             try {
                 Thread.sleep(RECONNECT_TIMEOUT);
             } catch (InterruptedException e1) {
@@ -187,8 +217,8 @@ public class SerialService implements Runnable {
      */
     public void stop(){
         if(serviceStopping || serviceStopped) return;
-        log.info("Stopping SerialService..");
         setStopping();
+        log.info("Stopping SerialService..");
 
         while(!serviceStopped) {
             try {
@@ -198,18 +228,18 @@ public class SerialService implements Runnable {
                 log.error("Sleep error", e);
             }
         }
-        if(serialDriver !=null)
-            serialDriver.disconnect();
+
+        serialDriver.pause();
     }
 
-    public void stopNowait(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SerialService.this.stop();
-            }
-        }).start();
-    }
+//    public void stopNowait(){
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                SerialService.this.stop();
+//            }
+//        }).start();
+//    }
 
     /**
      * Getter
@@ -219,18 +249,44 @@ public class SerialService implements Runnable {
         return serialDriver;
     }
 
-    public PriorityBlockingQueue<Command> getCommandQueue() {
+    public CommandQueue getCommandQueue() {
         return commandQueue;
     }
 
-    public boolean isStopped() {
-        return serviceStopped;
-    }
+//    public boolean isStopped() {
+//        return serviceStopped;
+//    }
 
     public String getStatus() {
         if(serviceStopped) return "stopped";
         if(serviceStopping) return "stopping..";
         return "running";
+    }
+
+    public void destroy(){
+        stop();
+
+        disconnect();
+
+        commandQueue.removeAllListeners();
+    }
+
+    private void disconnect(){
+        if(serialDriver !=null)
+            serialDriver.disconnect();
+        disconnected = true;
+    }
+
+    @Override
+    public void queueDataAvailable() {
+//        start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SerialService.this.start();
+            }
+        }).start();
+
     }
 
 }

@@ -182,4 +182,17 @@ public class SerialConnection {
         clearPortAttributes();
     }
 
+    public void pause(){
+        serialPort.removeEventListener();
+    }
+
+    public void resume(){
+        try {
+            serialCommunicator.initListener();
+        } catch (TooManyListenersException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+
 }

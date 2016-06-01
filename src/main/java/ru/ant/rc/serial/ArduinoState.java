@@ -66,6 +66,7 @@ public class ArduinoState {
             temperature = Integer.parseInt(serialCommunicator.sendCommand("Temperature"));
             freeRAM = Integer.parseInt(serialCommunicator.sendCommand("FreeRAM"));
             upTime = Integer.parseInt(serialCommunicator.sendCommand("UpTime"));
+            refreshLastTime = timestamp;
         }
     }
 

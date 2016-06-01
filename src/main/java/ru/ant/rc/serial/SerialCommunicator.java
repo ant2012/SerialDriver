@@ -115,6 +115,7 @@ public class SerialCommunicator implements SerialPortEventListener{
      * @return Firmware answer text
      */
     public String sendCommand(String command) throws CommPortException {
+        logger.debug("HW command: "+command);
         this.sendMessage(command);
 
         String message = null;
@@ -125,6 +126,7 @@ public class SerialCommunicator implements SerialPortEventListener{
                 throw new CommPortException("Answer timeout expired");
             }
         }
+        logger.debug("HW answer: "+message);
         return message;
     }
 }

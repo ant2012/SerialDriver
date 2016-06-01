@@ -73,4 +73,12 @@ public abstract class SerialDriver {
     public Config getConfig() {
         return config;
     }
+
+    public void pause(){
+        serialConnection.pause();
+    }
+
+    public void resume(){
+        serialConnection.resume();
+    }
 }

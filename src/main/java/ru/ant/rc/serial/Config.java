@@ -24,6 +24,7 @@ public class Config {
     public static final String SERVICE_MAX_QUEUE_SIZE = "SerialService.MaxQueueSize";
     public static final String SERVICE_POLL_WAIT_TIMEOUT = "SerialService.PollWaitTimeout";
     public static final String SERVICE_RECONNECT_TIMEOUT = "SerialService.ReconnectTimeout";
+    public static final String SLEEP_TIMEOUT = "SerialService.SleepTimeout";
 
     public void setOption(String key, String val, String comments){
         String old = App.getProperty(key);
