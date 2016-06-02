@@ -8,13 +8,14 @@
 #define DIR_LEFT    4
 #define DIRECTION_FORWARD HIGH
 #define DIRECTION_BACKWARD LOW
-#define SPEED_MAX  255
+#define SPEED_MAX  150
 #define SPEED_MIN  127
 #define LEFT  0
 #define RIGHT 1
 #define ROTATE_CW  0
 #define ROTATE_CCW 1
 #define STOP_TIMEOUT 3000
+#define VERSION "0.0.2"
 
 const int SPEED_HALF = (SPEED_MAX-SPEED_MIN)/2 + SPEED_MIN;
 
@@ -52,14 +53,14 @@ void correctSpeed()
 
 void doMovement()
 {
-    digitalWrite(DIR_LEFT, leftWheelDirection); 
-    digitalWrite(DIR_RIGHT, rightWheelDirection); 
+    digitalWrite(DIR_LEFT, leftWheelDirection);
+    digitalWrite(DIR_RIGHT, rightWheelDirection);
     analogWrite(SPEED_LEFT, leftWheelSpeed);
     analogWrite(SPEED_RIGHT, rightWheelSpeed);
-    //delay(movementDuration); 
+    //delay(movementDuration);
     //analogWrite(SPEED_LEFT, 0);
     //analogWrite(SPEED_RIGHT, 0);
-    //digitalWrite(DIR_LEFT, LOW); 
+    //digitalWrite(DIR_LEFT, LOW);
     //digitalWrite(DIR_RIGHT, LOW);
     //clear();
     lastCommandTimestamp = millis();
@@ -104,7 +105,7 @@ void rotateCCW(int speed)
 
 void showVersion()
 {
-  answer = "Arduino Firmware Version: ANT 0.0.1";
+  answer = VERSION;
 }
 
 void showHardwareType()
