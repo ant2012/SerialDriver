@@ -81,13 +81,13 @@ public class SerialHardwareDetector {
         } catch (CommPortException e) {
             logger.error(e.getMessage(), e);
         }
-        if (fwVersion == null || !fwVersion.startsWith("Arduino")) {
+        if (fwVersion == null) {
             String portName = serialConnection.getPortName();
             serialConnection.disconnect();
             throw new CommPortException("There is no Arduino on " + portName);
         }
         logger.info("Port " + serialConnection.getPortName() + " looks like her majesty Arduino!");
-        logger.info("Detected: " + fwVersion);
+        logger.info("Detected arduino firmware version: " + fwVersion);
     }
 
     private void detectCommPort() throws CommPortException {
