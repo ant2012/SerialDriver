@@ -18,6 +18,8 @@ public class Config {
     public static final String COMM_PORT_NAME = "CommPortName";
     public static final String BATTERY_MIN_VOLTAGE = "Battery.MinVoltage";
     public static final String BATTERY_MAX_VOLTAGE = "Battery.MaxVoltage";
+    public static final String BATTERY_MIN_VOLTAGE_CALIBRATION = "Battery.MinVoltage.calibration";
+    public static final String BATTERY_MAX_VOLTAGE_CALIBRATION = "Battery.MaxVoltage.calibration";
     public static final String SERIAL_LISTENER_TIMEOUT = "SerialCommunicator.PortListenerTimeout";
     public static final String COMM_PORT_INTERNAL_TIMEOUT = "SerialConnection.PortInternalTimeout";
     public static final String STATE_REFRESH_PERIOD = "SerialDriver.HardwareStateRefreshPeriod";
