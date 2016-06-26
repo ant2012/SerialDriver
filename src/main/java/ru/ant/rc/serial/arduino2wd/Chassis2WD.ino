@@ -15,7 +15,9 @@
 #define ROTATE_CW  0
 #define ROTATE_CCW 1
 #define STOP_TIMEOUT 3000
-#define VERSION "0.0.2"
+#define VERSION "0.0.3"
+
+#define VOLTAGE_PIN 0
 
 const int SPEED_HALF = (SPEED_MAX-SPEED_MIN)/2 + SPEED_MIN;
 
@@ -129,7 +131,9 @@ long readVcc() {
 
 void getVoltage()
 {
-  answer = String(readVcc(), DEC);
+	long val = analogRead(VOLTAGE_PIN);
+	answer = String(val, DEC);
+//	answer = String(readVcc(), DEC);
 }
 
 //Copy from http://playground.arduino.cc/Main/InternalTemperatureSensor
@@ -165,7 +169,7 @@ int freeRam(void)
   if (__brkval == 0)
     free_memory = (int) &stack_here - (int) &__heap_start;
   else
-    free_memory = (int) &stack_here - (int) __brkval; 
+    free_memory = (int) &stack_here - (int) __brkval;
 
   return (free_memory);
 }
@@ -184,7 +188,7 @@ void getTotalRAM() {
 //   http://arduino.cc/forum/index.php/topic,115870.msg872309.html#msg872309
 // Changed into unsigned long for code size larger than 64kB.
 //
-// This function returns the sketch size 
+// This function returns the sketch size
 // for a size between 0 and 32k. If the code
 // size is larger (for example with an Arduino Mega),
 // the return value is not valid.
@@ -264,7 +268,7 @@ void getGccCpuTarget() {
   answer = "AVR_ATmega32";
 #elif defined (__AVR_ATmega328__)
   answer = "AVR_ATmega328";
-#elif defined (__AVR_ATmega328P__) 
+#elif defined (__AVR_ATmega328P__)
   answer = "AVR_ATmega328P";
 #elif defined (__AVR_ATmega32U2__)
   answer = "AVR_ATmega32U2";
@@ -281,7 +285,7 @@ void getGccCpuTarget() {
 #endif
 }
 
-void setup() 
+void setup()
 {
   lastCommandTimestamp = millis();
   Serial.begin(9600);
@@ -290,6 +294,7 @@ void setup()
   pinMode(SPEED_RIGHT, OUTPUT);
   pinMode(SPEED_LEFT,  OUTPUT);
   pinMode(DIR_LEFT,    OUTPUT);
+  pinMode(VOLTAGE_PIN, INPUT);
 }
 
 boolean finished = false;
